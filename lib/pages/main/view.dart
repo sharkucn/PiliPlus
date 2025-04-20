@@ -36,7 +36,7 @@ class _MainAppState extends State<MainApp>
   late final _homeController = Get.put(HomeController());
   late final _dynamicController = Get.put(DynamicsController());
 
-  late int _lastSelectTime = 0;
+  late int _lastSelectTime = 0; // 上次点击时间
   late bool enableMYBar;
   late bool useSideBar;
 
@@ -192,7 +192,7 @@ class _MainAppState extends State<MainApp>
         value: SystemUiOverlayStyle(
           systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness:
-              Theme.of(context).brightness.reverse,
+              Theme.of(context).brightness.reverse, // 设置虚拟按键图标颜色
         ),
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -204,91 +204,38 @@ class _MainAppState extends State<MainApp>
                   context.orientation == Orientation.landscape) ...[
                 Obx(
                   () => _mainController.navigationBars.length > 1
-                      ? context.isTablet
-                          ? Column(
-                              children: [
-                                SizedBox(
-                                    height:
-                                        MediaQuery.paddingOf(context).top + 50),
-                                userAndSearchVertical,
-                                const Spacer(flex: 2),
-                                Expanded(
-                                  flex: 5,
-                                  child: SizedBox(
-                                    width: 130,
-                                    child: MediaQuery.removePadding(
-                                      context: context,
-                                      removeRight: true,
-                                      child: NavigationDrawer(
-                                        backgroundColor: Colors.transparent,
-                                        tilePadding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 12),
-                                        indicatorShape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16)),
-                                        onDestinationSelected: setIndex,
-                                        selectedIndex:
-                                            _mainController.selectedIndex.value,
-                                        children: [
-                                          ..._mainController.navigationBars
-                                              .map((e) {
-                                            return NavigationDrawerDestination(
-                                              label: Text(e['label']),
-                                              icon: _buildIcon(
-                                                id: e['id'],
-                                                count: e['count'],
-                                                icon: e['icon'],
-                                              ),
-                                              selectedIcon: _buildIcon(
-                                                id: e['id'],
-                                                count: e['count'],
-                                                icon: e['selectIcon'],
-                                              ),
-                                            );
-                                          }),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : NavigationRail(
-                              groupAlignment: 0.5,
-                              selectedIndex:
-                                  _mainController.selectedIndex.value,
-                              onDestinationSelected: setIndex,
-                              labelType: NavigationRailLabelType.selected,
-                              leading: userAndSearchVertical,
-                              destinations: _mainController.navigationBars
-                                  .map(
-                                    (e) => NavigationRailDestination(
-                                      icon: _buildIcon(
-                                        id: e['id'],
-                                        count: e['count'],
-                                        icon: e['icon'],
-                                      ),
-                                      selectedIcon: _buildIcon(
-                                        id: e['id'],
-                                        count: e['count'],
-                                        icon: e['selectIcon'],
-                                      ),
-                                      label: Text(e['label']),
-                                    ),
-                                  )
-                                  .toList(),
-                            )
-                      : SafeArea(
-                          right: false,
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              top: 10,
-                            ),
-                            width: 80,
-                            child: userAndSearchVertical,
-                          ),
-                        ),
-                ),
+                      ? NavigationRail(
+                           groupAlignment: 0.5,
+                           selectedIndex: _mainController.selectedIndex.value,
+                           onDestinationSelected: setIndex,
+                           labelType: NavigationRailLabelType.selected,
+                           leading: userAndSearchVertical,
+                           destinations: _mainController.navigationBars
+                               .map(
+                                 (e) => NavigationRailDestination(
+                                   icon: _buildIcon(
+                                     id: e['id'],
+                                     count: e['count'],
+                                     icon: e['icon'],
+                                   ),
+                                   selectedIcon: _buildIcon(
+                                     id: e['id'],
+                                     count: e['count'],
+                                     icon: e['selectIcon'],
+                                   ),
+                                   label: Text(e['label']),
+                                 ),
+                               )
+                               .toList(),
+                         )
+                       : Container(
+                           padding: EdgeInsets.only(
+                             top: MediaQuery.paddingOf(context).top + 10,
+                           ),
+                           width: 56,
+                           child: userAndSearchVertical,
+                         ),
+                 ),
                 VerticalDivider(
                   width: 1,
                   indent: MediaQuery.of(context).padding.top,
@@ -486,10 +433,10 @@ class _MainAppState extends State<MainApp>
               : const SizedBox.shrink(),
         ),
         IconButton(
-          tooltip: '搜索',
+          tooltip: ' 搜索',
           icon: const Icon(
             Icons.search_outlined,
-            semanticLabel: '搜索',
+            semanticLabel: ' 搜索',
           ),
           onPressed: () => Get.toNamed('/search'),
         ),
