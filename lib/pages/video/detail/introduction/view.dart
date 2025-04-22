@@ -243,6 +243,7 @@ class _VideoInfoState extends State<VideoInfo> {
     videoIntroController.expandableCtr?.toggle();
   }
 
+  // 用户主页
   onPushMember() {
     feedBack();
     int? mid = !widget.loadingStatus
@@ -296,25 +297,22 @@ class _VideoInfoState extends State<VideoInfo> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Obx(
-                                      () => Avatar(
-                                        avatar: videoIntroController.userStat
-                                                .value['card']?['face'] ??
-                                            '',
-                                        size: 35,
-                                        isVip: (videoIntroController
-                                                        .userStat.value['card']
-                                                    ?['vip']?['status'] ??
-                                                -1) >
-                                            0,
-                                        officialType: videoIntroController
-                                                .userStat.value['card']
-                                            ?['official_verify']?['type'],
-                                        garbPendantImage: videoIntroController
-                                                .userStat.value['card']
-                                            ?['pendant']?['image'],
-                                      ),
-                                    ),
+                                    Obx(() => Avatar(
+                                          avatar: videoIntroController.userStat
+                                                  .value['card']?['face'] ??
+                                              '',
+                                          size: 35,
+                                          badgeSize: 14,
+                                          isVip: (videoIntroController.userStat
+                                                          .value['card']?['vip']
+                                                      ?['status'] ??
+                                                  -1) >
+                                              0,
+                                          officialType: videoIntroController
+                                                  .userStat.value['card']
+                                              ?['official_verify']?['type'],
+                                          // garbPendantImage: videoIntroController.userStat.value['card']?['pendant']?['image'],
+                                        )),
                                     const SizedBox(width: 10),
                                     Column(
                                       crossAxisAlignment:
@@ -421,7 +419,7 @@ class _VideoInfoState extends State<VideoInfo> {
                                                                 .official?[
                                                             'type'] ==
                                                         0
-                                                    ? Colors.yellow
+                                                    ? const Color(0xFFFFCC00)
                                                     : Colors.lightBlueAccent,
                                                 size: 14,
                                               ),
@@ -845,7 +843,7 @@ class _VideoInfoState extends State<VideoInfo> {
       height: 48,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
+        children: [
           Obx(
             () => ActionItem(
               icon: const Icon(FontAwesomeIcons.thumbsUp),
@@ -949,66 +947,61 @@ class _VideoInfoState extends State<VideoInfo> {
     VideoIntroController videoIntroController,
     VideoDetailController videoDetailCtr,
   ) {
-    return Row(
-      children: [
-        Obx(
-          () => ActionRowItem(
-            icon: const Icon(FontAwesomeIcons.thumbsUp),
-            onTap: () => handleState(videoIntroController.actionLikeVideo),
-            selectStatus: videoIntroController.hasLike.value,
-            loadingStatus: widget.loadingStatus,
-            text: !widget.loadingStatus
-                ? videoDetail.stat!.like!.toString()
-                : '-',
-          ),
-        ),
-        const SizedBox(width: 8),
-        Obx(
-          () => ActionRowItem(
-            icon: const Icon(FontAwesomeIcons.b),
-            onTap: () => handleState(videoIntroController.actionCoinVideo),
-            selectStatus: videoIntroController.hasCoin,
-            loadingStatus: widget.loadingStatus,
-            text: !widget.loadingStatus
-                ? videoDetail.stat!.coin!.toString()
-                : '-',
-          ),
-        ),
-        const SizedBox(width: 8),
-        Obx(
-          () => ActionRowItem(
-            icon: const Icon(FontAwesomeIcons.heart),
-            onTap: () => videoIntroController.showFavBottomSheet(context),
-            onLongPress: () => videoIntroController.showFavBottomSheet(context,
-                type: 'longPress'),
-            selectStatus: videoIntroController.hasFav.value,
-            loadingStatus: widget.loadingStatus,
-            text: !widget.loadingStatus
-                ? videoDetail.stat!.favorite!.toString()
-                : '-',
-          ),
-        ),
-        const SizedBox(width: 8),
-        ActionRowItem(
-          icon: const Icon(FontAwesomeIcons.comment),
-          onTap: () {
-            videoDetailCtr.tabCtr.animateTo(1);
-          },
-          selectStatus: false,
+    return Row(children: <Widget>[
+      Obx(
+        () => ActionRowItem(
+          icon: const Icon(FontAwesomeIcons.thumbsUp),
+          onTap: () => handleState(videoIntroController.actionLikeVideo),
+          selectStatus: videoIntroController.hasLike.value,
           loadingStatus: widget.loadingStatus,
           text:
-              !widget.loadingStatus ? videoDetail.stat!.reply!.toString() : '-',
+              !widget.loadingStatus ? videoDetail.stat!.like!.toString() : '-',
         ),
-        const SizedBox(width: 8),
-        ActionRowItem(
-          icon: const Icon(FontAwesomeIcons.share),
-          onTap: () => videoIntroController.actionShareVideo(context),
-          selectStatus: false,
+      ),
+      const SizedBox(width: 8),
+      Obx(
+        () => ActionRowItem(
+          icon: const Icon(FontAwesomeIcons.b),
+          onTap: () => handleState(videoIntroController.actionCoinVideo),
+          selectStatus: videoIntroController.hasCoin,
           loadingStatus: widget.loadingStatus,
-          text: '转发',
+          text:
+              !widget.loadingStatus ? videoDetail.stat!.coin!.toString() : '-',
         ),
-      ],
-    );
+      ),
+      const SizedBox(width: 8),
+      Obx(
+        () => ActionRowItem(
+          icon: const Icon(FontAwesomeIcons.heart),
+          onTap: () => videoIntroController.showFavBottomSheet(context),
+          onLongPress: () => videoIntroController.showFavBottomSheet(context,
+              type: 'longPress'),
+          selectStatus: videoIntroController.hasFav.value,
+          loadingStatus: widget.loadingStatus,
+          text: !widget.loadingStatus
+              ? videoDetail.stat!.favorite!.toString()
+              : '-',
+        ),
+      ),
+      const SizedBox(width: 8),
+      ActionRowItem(
+        icon: const Icon(FontAwesomeIcons.comment),
+        onTap: () {
+          videoDetailCtr.tabCtr.animateTo(1);
+        },
+        selectStatus: false,
+        loadingStatus: widget.loadingStatus,
+        text: !widget.loadingStatus ? videoDetail.stat!.reply!.toString() : '-',
+      ),
+      const SizedBox(width: 8),
+      ActionRowItem(
+        icon: const Icon(FontAwesomeIcons.share),
+        onTap: () => videoIntroController.actionShareVideo(context),
+        selectStatus: false,
+        loadingStatus: widget.loadingStatus,
+        text: '转发',
+      ),
+    ]);
   }
 
   InlineSpan buildContent(BuildContext context, VideoDetailData content) {

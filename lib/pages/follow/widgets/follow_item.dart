@@ -3,20 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:PiliPlus/common/widgets/network_img_layer.dart';
 import 'package:PiliPlus/models/follow/result.dart';
-import 'package:PiliPlus/pages/follow/index.dart';
 import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:PiliPlus/utils/utils.dart';
 
 class FollowItem extends StatelessWidget {
   final FollowItemModel item;
-  final FollowController? ctr;
+  final bool? isOwner;
   final ValueChanged? callback;
 
   const FollowItem({
     super.key,
     required this.item,
     this.callback,
-    this.ctr,
+    this.isOwner,
   });
 
   @override
@@ -53,7 +52,7 @@ class FollowItem extends StatelessWidget {
                 child: Icon(
                   Icons.offline_bolt,
                   color: item.officialVerify?['type'] == 0
-                      ? Colors.yellow
+                      ? const Color(0xFFFFCC00)
                       : Colors.lightBlueAccent,
                   size: 14,
                 ),
@@ -73,7 +72,7 @@ class FollowItem extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       dense: true,
-      trailing: ctr?.isOwner.value == true
+      trailing: isOwner == true
           ? SizedBox(
               height: 34,
               child: FilledButton.tonal(

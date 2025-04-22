@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:PiliPlus/utils/extension.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:get/get.dart';
 
 class CacheManage {
   CacheManage._internal();
@@ -13,7 +11,7 @@ class CacheManage {
   factory CacheManage() => cacheManage;
 
   // 获取缓存目录
-  Future<String> loadApplicationCache() async {
+  Future<double> loadApplicationCache() async {
     /// clear all of image in memory
     // clearMemoryImageCache();
     /// get ImageCache
@@ -44,7 +42,7 @@ class CacheManage {
       cacheSize += value;
     }
 
-    return formatSize(cacheSize);
+    return cacheSize;
   }
 
   // 循环计算文件的大小（递归）
@@ -65,54 +63,15 @@ class CacheManage {
   }
 
   // 缓存大小格式转换
-  static String formatSize(double value) {
-    List<String> unitArr = ['B', 'K', 'M', 'G'];
+  static String formatSize(num value) {
+    List<String> unitArr = const ['B', 'K', 'M', 'G', 'T', 'P'];
     int index = 0;
-    while (value > 1024) {
+    while (value >= 1024) {
       index++;
       value = value / 1024;
     }
     String size = value.toStringAsFixed(2);
-    return size + unitArr[index];
-  }
-
-  // 清除缓存
-  Future<void> clearCacheAll(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('提示'),
-          content: const Text('该操作将清除图片及网络请求缓存数据，确认清除？'),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(
-                '取消',
-                style: TextStyle(color: Theme.of(context).colorScheme.outline),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                SmartDialog.showLoading(msg: '正在清除...');
-                try {
-                  // 清除缓存 图片缓存
-                  await clearLibraryCache();
-                  SmartDialog.dismiss().then((res) {
-                    SmartDialog.showToast('清除成功');
-                  });
-                } catch (err) {
-                  SmartDialog.dismiss();
-                  SmartDialog.showToast(err.toString());
-                }
-                Get.back();
-              },
-              child: const Text('确认'),
-            )
-          ],
-        );
-      },
-    );
+    return size + unitArr.getOrElse(index, orElse: () => '');
   }
 
   /// 清除 Documents 目录下的 DioCache.db

@@ -134,9 +134,13 @@ class _FavPageState extends State<FavPage> with SingleTickerProviderStateMixin {
           tabs: _FavType.values.map((item) => Tab(text: item.title)).toList(),
         ),
       ),
-      body: tabBarView(
-        controller: _tabController,
-        children: _FavType.values.map((item) => item.page).toList(),
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: tabBarView(
+          controller: _tabController,
+          children: _FavType.values.map((item) => item.page).toList(),
+        ),
       ),
     );
   }

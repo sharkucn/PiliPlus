@@ -86,38 +86,42 @@ class _LaterPageState extends State<LaterPage>
                   )
                 : const SizedBox(),
           ),
-          body: Column(
-            children: [
-              TabBar(
-                isScrollable: true,
-                controller: _tabController,
-                tabAlignment: TabAlignment.start,
-                tabs: LaterViewType.values.map((item) {
-                  final count = _baseCtr.counts[item];
-                  return Tab(
-                      text: '${item.title}${count != -1 ? '($count)' : ''}');
-                }).toList(),
-                onTap: (_) {
-                  if (_tabController.indexIsChanging.not) {
-                    currCtr().scrollController.animToTop();
-                  } else {
-                    if (_baseCtr.enableMultiSelect.value) {
-                      currCtr(_tabController.previousIndex).handleSelect();
-                    }
-                  }
-                },
-              ),
-              Expanded(
-                child: TabBarView(
-                  physics: _baseCtr.enableMultiSelect.value
-                      ? const NeverScrollableScrollPhysics()
-                      : const CustomTabBarViewScrollPhysics(),
+          body: SafeArea(
+            top: false,
+            bottom: false,
+            child: Column(
+              children: [
+                TabBar(
+                  isScrollable: true,
                   controller: _tabController,
-                  children:
-                      LaterViewType.values.map((item) => item.page).toList(),
+                  tabAlignment: TabAlignment.start,
+                  tabs: LaterViewType.values.map((item) {
+                    final count = _baseCtr.counts[item];
+                    return Tab(
+                        text: '${item.title}${count != -1 ? '($count)' : ''}');
+                  }).toList(),
+                  onTap: (_) {
+                    if (_tabController.indexIsChanging.not) {
+                      currCtr().scrollController.animToTop();
+                    } else {
+                      if (_baseCtr.enableMultiSelect.value) {
+                        currCtr(_tabController.previousIndex).handleSelect();
+                      }
+                    }
+                  },
                 ),
-              ),
-            ],
+                Expanded(
+                  child: TabBarView(
+                    physics: _baseCtr.enableMultiSelect.value
+                        ? const NeverScrollableScrollPhysics()
+                        : const CustomTabBarViewScrollPhysics(),
+                    controller: _tabController,
+                    children:
+                        LaterViewType.values.map((item) => item.page).toList(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

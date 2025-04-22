@@ -38,25 +38,20 @@ class AuthorPanel extends StatelessWidget {
     this.onSetTop,
   });
 
-  Widget _buildAvatar() => Avatar(
-        avatar: item.modules.moduleAuthor.face,
-        size: 34,
-        isVip: (item.modules.moduleAuthor?.vip?['status'] ?? 0) > 0,
-        officialType: null, // 已被注释
-        garbPendantImage: item.modules.moduleAuthor?.pendant?['image'],
-        onTap: (item.modules.moduleAuthor.type == 'AUTHOR_TYPE_PGC' ||
-                item.modules.moduleAuthor.type == 'AUTHOR_TYPE_UGC_SEASON')
-            ? null // 番剧
-            : () {
-                feedBack();
-                Get.toNamed(
-                  '/member?mid=${item.modules.moduleAuthor.mid}',
-                  arguments: {
-                    'face': item.modules.moduleAuthor.face,
-                  },
-                );
-              },
-      );
+  Widget _buildAvatar() {
+    String? pendant = item.modules.moduleAuthor?.pendant?['image'];
+    Widget avatar = Avatar(
+      avatar: item.modules.moduleAuthor.face,
+      size: pendant.isNullOrEmpty ? 40 : 34,
+      isVip: null, // item.modules.moduleAuthor!.vip['status'] > 0
+      officialType: null, // 已被注释
+      garbPendantImage: pendant,
+    );
+    if (!pendant.isNullOrEmpty) {
+      avatar = Padding(padding: const EdgeInsets.all(3), child: avatar);
+    }
+    return avatar;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +72,22 @@ class AuthorPanel extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildAvatar(),
+              (item.modules.moduleAuthor.type == 'AUTHOR_TYPE_PGC' ||
+                      item.modules.moduleAuthor.type ==
+                          'AUTHOR_TYPE_UGC_SEASON')
+                  ? _buildAvatar() // 番剧
+                  : GestureDetector(
+                      onTap: () {
+                        feedBack();
+                        Get.toNamed(
+                          '/member?mid=${item.modules.moduleAuthor.mid}',
+                          arguments: {
+                            'face': item.modules.moduleAuthor.face,
+                          },
+                        );
+                      },
+                      child: _buildAvatar(),
+                    ),
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,8 +160,9 @@ class AuthorPanel extends StatelessWidget {
                           children: [
                             CachedNetworkImage(
                               height: 32,
-                              imageUrl: item
-                                  .modules.moduleAuthor.decorate['card_url'],
+                              imageUrl: (item.modules.moduleAuthor
+                                      .decorate['card_url'] as String)
+                                  .http2https,
                             ),
                             if ((item.modules.moduleAuthor.decorate?['fan']
                                         ?['num_str'] as String?)
@@ -229,6 +240,17 @@ class AuthorPanel extends StatelessWidget {
         _ => null,
       };
     } catch (_) {}
+    if (bvid == null && item.orig != null) {
+      try {
+        bvid = switch (item.orig.type) {
+          'DYNAMIC_TYPE_AV' =>
+            item.orig.modules.moduleDynamic.major.archive.bvid,
+          'DYNAMIC_TYPE_UGC_SEASON' =>
+            item.orig.modules.moduleDynamic.major.ugcSeason.bvid,
+          _ => null,
+        };
+      } catch (_) {}
+    }
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       child: Column(

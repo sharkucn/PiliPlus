@@ -1,3 +1,6 @@
+import 'package:PiliPlus/common/skeleton/msg_feed_top.dart';
+import 'package:PiliPlus/common/widgets/dialog.dart';
+import 'package:PiliPlus/common/widgets/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/refresh_indicator.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/fans/result.dart';
@@ -8,7 +11,6 @@ import 'package:PiliPlus/common/widgets/http_error.dart';
 
 import '../../utils/grid.dart';
 import 'controller.dart';
-import 'widgets/fan_item.dart';
 
 class FansPage extends StatefulWidget {
   const FansPage({super.key});
@@ -33,17 +35,20 @@ class _FansPageState extends State<FansPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _fansController.isOwner.value ? '我的粉丝' : '${_fansController.name}的粉丝',
+          _fansController.isOwner ? '我的粉丝' : '${_fansController.name}的粉丝',
         ),
       ),
-      body: refreshIndicator(
-        onRefresh: () async => await _fansController.onRefresh(),
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: _fansController.scrollController,
-          slivers: [
-            Obx(() => _buildBody(_fansController.loadingState.value)),
-          ],
+      body: SafeArea(
+        bottom: false,
+        child: refreshIndicator(
+          onRefresh: () async => await _fansController.onRefresh(),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: _fansController.scrollController,
+            slivers: [
+              Obx(() => _buildBody(_fansController.loadingState.value)),
+            ],
+          ),
         ),
       ),
     );
@@ -51,7 +56,18 @@ class _FansPageState extends State<FansPage> {
 
   Widget _buildBody(LoadingState<List<FansItemModel>?> loadingState) {
     return switch (loadingState) {
-      Loading() => HttpError(),
+      Loading() => SliverGrid(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: Grid.smallCardWidth * 2,
+            mainAxisExtent: 66,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return const MsgFeedTopSkeleton();
+            },
+            childCount: 16,
+          ),
+        ),
       Success() => loadingState.response?.isNotEmpty == true
           ? SliverPadding(
               padding: EdgeInsets.only(
@@ -66,7 +82,47 @@ class _FansPageState extends State<FansPage> {
                     if (index == loadingState.response!.length - 1) {
                       _fansController.onLoadMore();
                     }
-                    return fanItem(item: loadingState.response![index]);
+                    final item = loadingState.response![index];
+                    String heroTag = Utils.makeHeroTag(item.mid);
+                    return ListTile(
+                      onTap: () {
+                        Get.toNamed(
+                          '/member?mid=${item.mid}',
+                          arguments: {'face': item.face, 'heroTag': heroTag},
+                        );
+                      },
+                      onLongPress: _fansController.isOwner
+                          ? () {
+                              showConfirmDialog(
+                                context: context,
+                                title: '确定移除 ${item.uname} ？',
+                                onConfirm: () {
+                                  _fansController.onRemoveFan(index, item.mid!);
+                                },
+                              );
+                            }
+                          : null,
+                      leading: Hero(
+                        tag: heroTag,
+                        child: NetworkImgLayer(
+                          width: 45,
+                          height: 45,
+                          type: 'avatar',
+                          src: item.face,
+                        ),
+                      ),
+                      title: Text(
+                        item.uname!,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      subtitle: Text(
+                        item.sign ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      dense: true,
+                      trailing: const SizedBox(width: 6),
+                    );
                   },
                   childCount: loadingState.response!.length,
                 ),

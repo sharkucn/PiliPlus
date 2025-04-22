@@ -198,6 +198,9 @@ class MineController extends GetxController {
 
   onChangeTheme() {
     themeType.value = nextThemeType;
+    try {
+      Get.find<MineController>().themeType.value = themeType.value;
+    } catch (_) {}
     setting.put(SettingBoxKey.themeMode, themeType.value.code);
     Get.changeThemeMode(themeType.value.toThemeMode);
   }

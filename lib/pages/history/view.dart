@@ -179,50 +179,59 @@ class _HistoryPageState extends State<HistoryPage>
                       ),
                 body: Obx(
                   () => _historyController.tabs.isNotEmpty
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TabBar(
-                              controller: _historyController.tabController,
-                              onTap: (index) {
-                                if (_historyController
-                                    .tabController!.indexIsChanging.not) {
-                                  currCtr().scrollController.animToTop();
-                                } else {
-                                  if (enableMultiSelect) {
-                                    currCtr(_historyController
-                                            .tabController!.previousIndex)
-                                        .handleSelect();
+                      ? SafeArea(
+                          top: false,
+                          bottom: false,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TabBar(
+                                controller: _historyController.tabController,
+                                onTap: (index) {
+                                  if (_historyController
+                                      .tabController!.indexIsChanging.not) {
+                                    currCtr().scrollController.animToTop();
+                                  } else {
+                                    if (enableMultiSelect) {
+                                      currCtr(_historyController
+                                              .tabController!.previousIndex)
+                                          .handleSelect();
+                                    }
                                   }
-                                }
-                              },
-                              tabs: [
-                                Tab(text: '全部'),
-                                ..._historyController.tabs.map(
-                                  (item) => Tab(text: item.name),
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: TabBarView(
-                                  physics: enableMultiSelect
-                                      ? const NeverScrollableScrollPhysics()
-                                      : const CustomTabBarViewScrollPhysics(),
-                                  controller: _historyController.tabController,
-                                  children: [
-                                    _buildPage,
-                                    ..._historyController.tabs.map(
-                                      (item) => HistoryPage(type: item.type),
-                                    ),
-                                  ],
+                                },
+                                tabs: [
+                                  Tab(text: '全部'),
+                                  ..._historyController.tabs.map(
+                                    (item) => Tab(text: item.name),
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: TabBarView(
+                                    physics: enableMultiSelect
+                                        ? const NeverScrollableScrollPhysics()
+                                        : const CustomTabBarViewScrollPhysics(),
+                                    controller:
+                                        _historyController.tabController,
+                                    children: [
+                                      _buildPage,
+                                      ..._historyController.tabs.map(
+                                        (item) => HistoryPage(type: item.type),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         )
-                      : _buildPage,
+                      : SafeArea(
+                          top: false,
+                          bottom: false,
+                          child: _buildPage,
+                        ),
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:PiliPlus/pages/about/view.dart';
 import 'package:PiliPlus/pages/fav/view.dart';
 import 'package:PiliPlus/pages/fav_search/view.dart';
 import 'package:PiliPlus/pages/follow_search/view.dart';
@@ -22,7 +23,6 @@ import 'package:PiliPlus/pages/msg_feed_top/reply_me/view.dart';
 import 'package:PiliPlus/pages/msg_feed_top/like_me/view.dart';
 import 'package:PiliPlus/pages/setting/pages/logs.dart';
 
-import '../pages/about/index.dart';
 import '../pages/blacklist/view.dart';
 import '../pages/danmaku_block/view.dart';
 import '../pages/dynamics/detail/index.dart';

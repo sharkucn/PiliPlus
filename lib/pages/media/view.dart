@@ -40,47 +40,49 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
   Widget build(BuildContext context) {
     super.build(context);
     Color primary = Theme.of(context).colorScheme.primary;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        toolbarHeight: 30,
-      ),
-      body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        controller: controller.scrollController,
-        child: Column(
+    return MediaQuery.removePadding(
+      context: context,
+      removeLeft: context.orientation == Orientation.landscape,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          toolbarHeight: 30,
+        ),
+        body: ListView(
+          controller: controller.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
           children: [
             ListTile(
-                leading: null,
-                title: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Text(
-                    '媒体库',
-                    style: TextStyle(
-                      fontSize:
-                          Theme.of(context).textTheme.titleLarge!.fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
+              leading: null,
+              title: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  '媒体库',
+                  style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                trailing: IconButton(
-                  tooltip: '设置',
-                  onPressed: () {
-                    Get.toNamed('/setting');
-                  },
-                  icon: const Icon(
-                    Icons.settings_outlined,
-                    size: 20,
-                  ),
-                )),
-            for (var i in controller.list) ...[
+              ),
+              trailing: IconButton(
+                tooltip: '设置',
+                onPressed: () {
+                  Get.toNamed('/setting');
+                },
+                icon: const Icon(
+                  Icons.settings_outlined,
+                  size: 20,
+                ),
+              ),
+            ),
+            for (var item in controller.list)
               ListTile(
-                onTap: () => i['onTap'](),
+                onTap: item['onTap'],
                 dense: true,
                 leading: Padding(
                   padding: const EdgeInsets.only(left: 15),
                   child: Icon(
-                    i['icon'],
+                    item['icon'],
                     color: primary,
                   ),
                 ),
@@ -88,11 +90,10 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
                     const EdgeInsets.only(left: 15, top: 2, bottom: 2),
                 minLeadingWidth: 0,
                 title: Text(
-                  i['title'],
+                  item['title'],
                   style: const TextStyle(fontSize: 15),
                 ),
               ),
-            ],
             Obx(
               () => controller.loadingState.value is Loading
                   ? const SizedBox.shrink()
@@ -118,7 +119,6 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
               controller.onRefresh();
             });
           },
-          leading: null,
           dense: true,
           title: Padding(
             padding: const EdgeInsets.only(left: 10),
@@ -143,11 +143,12 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
                         ),
                       ),
                     WidgetSpan(
-                        child: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary,
-                    )),
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -156,21 +157,15 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
           trailing: IconButton(
             tooltip: '刷新',
             onPressed: controller.onRefresh,
-            icon: const Icon(
-              Icons.refresh,
-              size: 20,
-            ),
+            icon: const Icon(Icons.refresh, size: 20),
           ),
         ),
-        // const SizedBox(height: 10),
         SizedBox(
           width: double.infinity,
-          height: MediaQuery.textScalerOf(context).scale(200),
+          height: 200,
           child: Obx(() => _buildBody(controller.loadingState.value)),
         ),
-        SizedBox(
-          height: MediaQuery.paddingOf(context).bottom + 100,
-        ),
+        const SizedBox(height: 100),
       ],
     );
   }
@@ -251,7 +246,7 @@ class _MediaPageState extends CommonPageState<MediaPage, MediaController>
         ),
       );
     }
-    return const SizedBox();
+    return const SizedBox.shrink();
   }
 }
 

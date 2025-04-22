@@ -1,4 +1,3 @@
-import 'package:PiliPlus/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:PiliPlus/common/constants.dart';
@@ -17,7 +16,6 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage> {
   final MineController _mineController = Get.put(MineController())
-    ..themeType.value = ThemeType.values[GStorage.themeTypeInt]
     ..queryUserInfo();
 
   Widget get _header => FittedBox(

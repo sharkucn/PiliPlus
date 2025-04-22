@@ -53,31 +53,39 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
       ),
       body: Obx(
         () => _memberSearchCtr.hasData.value
-            ? Column(
-                children: [
-                  Obx(
-                    () => TabBar(
+            ? SafeArea(
+                top: false,
+                bottom: false,
+                child: Column(
+                  children: [
+                    TabBar(
                       controller: _memberSearchCtr.tabController,
                       tabs: [
-                        Tab(
+                        Obx(
+                          () => Tab(
                             text:
-                                '视频 ${_memberSearchCtr.archiveCount.value != -1 ? '${_memberSearchCtr.archiveCount.value}' : ''}'),
-                        Tab(
+                                '视频 ${_memberSearchCtr.archiveCount.value != -1 ? '${_memberSearchCtr.archiveCount.value}' : ''}',
+                          ),
+                        ),
+                        Obx(
+                          () => Tab(
                             text:
-                                '动态 ${_memberSearchCtr.dynamicCount.value != -1 ? '${_memberSearchCtr.dynamicCount.value}' : ''}'),
+                                '动态 ${_memberSearchCtr.dynamicCount.value != -1 ? '${_memberSearchCtr.dynamicCount.value}' : ''}',
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: tabBarView(
-                      controller: _memberSearchCtr.tabController,
-                      children: [
-                        SearchArchive(ctr: _memberSearchCtr),
-                        SearchDynamic(ctr: _memberSearchCtr),
-                      ],
+                    Expanded(
+                      child: tabBarView(
+                        controller: _memberSearchCtr.tabController,
+                        children: [
+                          SearchArchive(ctr: _memberSearchCtr),
+                          SearchDynamic(ctr: _memberSearchCtr),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             : FractionallySizedBox(
                 heightFactor: 0.5,

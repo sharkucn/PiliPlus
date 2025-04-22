@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/skeleton/whisper_item.dart';
 import 'package:PiliPlus/common/widgets/http_error.dart';
 import 'package:PiliPlus/common/widgets/refresh_indicator.dart';
 import 'package:PiliPlus/http/loading_state.dart';
@@ -30,11 +31,7 @@ class _WhisperPageState extends State<WhisperPage> {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverSafeArea(
-              top: false,
-              bottom: false,
-              sliver: _buildTopItems,
-            ),
+            _buildTopItems,
             Obx(() => _buildBody(_whisperController.loadingState.value)),
           ],
         ),
@@ -44,7 +41,12 @@ class _WhisperPageState extends State<WhisperPage> {
 
   Widget _buildBody(LoadingState<List<SessionList>?> loadingState) {
     return switch (loadingState) {
-      Loading() => const SliverToBoxAdapter(),
+      Loading() => SliverList.builder(
+          itemCount: 12,
+          itemBuilder: (context, index) {
+            return const WhisperItemSkeleton();
+          },
+        ),
       Success() => loadingState.response?.isNotEmpty == true
           ? SliverPadding(
               padding: EdgeInsets.only(
@@ -84,14 +86,18 @@ class _WhisperPageState extends State<WhisperPage> {
     };
   }
 
-  Widget get _buildTopItems => SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+  Widget get _buildTopItems => SliverSafeArea(
+        top: false,
+        bottom: false,
+        sliver: SliverToBoxAdapter(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(_whisperController.msgFeedTopItems.length,
                 (index) {
-              return Expanded(
-                child: GestureDetector(
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,17 +129,17 @@ class _WhisperPageState extends State<WhisperPage> {
                       ),
                     ],
                   ),
-                  onTap: () {
-                    if (!_whisperController.msgFeedTopItems[index]['enabled']) {
-                      SmartDialog.showToast('已禁用');
-                      return;
-                    }
-                    _whisperController.unreadCounts[index] = 0;
-                    Get.toNamed(
-                      _whisperController.msgFeedTopItems[index]['route'],
-                    );
-                  },
                 ),
+                onTap: () {
+                  if (!_whisperController.msgFeedTopItems[index]['enabled']) {
+                    SmartDialog.showToast('已禁用');
+                    return;
+                  }
+                  _whisperController.unreadCounts[index] = 0;
+                  Get.toNamed(
+                    _whisperController.msgFeedTopItems[index]['route'],
+                  );
+                },
               );
             }).toList(),
           ),
